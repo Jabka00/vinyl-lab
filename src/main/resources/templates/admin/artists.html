@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Виконавці')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div th:replace="~{fragments/layout :: alerts}"></div>
+  <div class="page-head">
+    <h1>Виконавці</h1>
+    <a class="button" th:href="@{/admin/artists/new}">Новий виконавець</a>
+  </div>
+  <table class="sheet">
+    <thead>
+    <tr><th>Ім’я</th><th>Країна</th><th>Альбомів</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="artist : ${artists}">
+      <td th:text="${artist.name}">Ім’я</td>
+      <td th:text="${artist.country}">Країна</td>
+      <td th:text="${artist.albumCount}">0</td>
+      <td class="row">
+        <a th:href="@{/admin/artists/{id}/edit(id=${artist.id})}">Змінити</a>
+        <form th:action="@{/admin/artists/{id}/delete(id=${artist.id})}" method="post" onsubmit="return confirm('Видалити виконавця?');">
+          <button class="text-button danger-text" type="submit" th:disabled="${artist.albumCount > 0}">Видалити</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

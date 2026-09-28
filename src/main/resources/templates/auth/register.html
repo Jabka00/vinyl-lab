@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Реєстрація')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1>Реєстрація</h1>
+  <form class="stack" th:action="@{/register}" th:object="${registerForm}" method="post">
+    <div th:replace="~{fragments/layout :: formErrors}"></div>
+    <label class="field">
+      <span>Ім’я</span>
+      <input th:field="*{username}" autocomplete="username" required>
+      <small th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+    </label>
+    <label class="field">
+      <span>Електронна пошта</span>
+      <input th:field="*{email}" type="email" autocomplete="email" required>
+      <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+    </label>
+    <label class="field">
+      <span>Пароль</span>
+      <input th:field="*{password}" type="password" autocomplete="new-password" required>
+      <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+    </label>
+    <label class="field">
+      <span>Пароль ще раз</span>
+      <input th:field="*{confirmPassword}" type="password" autocomplete="new-password" required>
+      <small th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+    </label>
+    <button class="button" type="submit">Створити обліковий запис</button>
+  </form>
+  <p class="quiet">Вже є запис? <a th:href="@{/login}">Увійти</a></p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

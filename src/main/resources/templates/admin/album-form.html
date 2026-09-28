@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${heading})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1 th:text="${heading}">Альбом</h1>
+  <form class="stack" th:object="${albumForm}" method="post"
+        th:action="${editing} ? @{/admin/albums/{id}(id=${entityId})} : @{/admin/albums}">
+    <div th:replace="~{fragments/layout :: formErrors}"></div>
+    <label class="field">
+      <span>Назва</span>
+      <input th:field="*{title}" required maxlength="160">
+      <small th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+    </label>
+    <label class="field">
+      <span>Виконавець</span>
+      <select th:field="*{artistId}" required>
+        <option value="">Оберіть</option>
+        <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}">Ім’я</option>
+      </select>
+      <small th:if="${#fields.hasErrors('artistId')}" th:errors="*{artistId}"></small>
+    </label>
+    <label class="field">
+      <span>Рік</span>
+      <input type="number" th:field="*{releaseYear}" min="1900" max="2035" required>
+      <small th:if="${#fields.hasErrors('releaseYear')}" th:errors="*{releaseYear}"></small>
+    </label>
+    <label class="field">
+      <span>Лейбл</span>
+      <input th:field="*{label}" maxlength="80">
+      <small th:if="${#fields.hasErrors('label')}" th:errors="*{label}"></small>
+    </label>
+    <fieldset class="field">
+      <legend>Жанри</legend>
+      <div class="checks">
+        <label th:each="genre : ${genres}">
+          <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}">
+          <span th:text="${genre.name}">Рок</span>
+        </label>
+      </div>
+      <small th:if="${#fields.hasErrors('genreIds')}" th:errors="*{genreIds}"></small>
+    </fieldset>
+    <div class="row">
+      <button class="button" type="submit">Зберегти</button>
+      <a class="button ghost" th:href="@{/admin/albums}">Скасувати</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

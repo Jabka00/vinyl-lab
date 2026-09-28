@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Адмін')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <p class="eyebrow">Адміністрування</p>
+  <h1>Довідники</h1>
+  <div class="metrics">
+    <a th:href="@{/admin/artists}"><strong th:text="${counts.artists}">0</strong><span>Виконавці</span></a>
+    <a th:href="@{/admin/albums}"><strong th:text="${counts.albums}">0</strong><span>Альбоми</span></a>
+    <a th:href="@{/admin/genres}"><strong th:text="${counts.genres}">0</strong><span>Жанри</span></a>
+    <a th:href="@{/admin/users}"><strong th:text="${counts.users}">0</strong><span>Користувачі</span></a>
+    <div><strong th:text="${counts.items}">0</strong><span>Записи колекцій</span></div>
+    <div><strong th:text="${counts.ratings}">0</strong><span>Оцінки</span></div>
+  </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${album.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div th:replace="~{fragments/layout :: alerts}"></div>
+  <article class="detail">
+    <div class="sleeve large" th:classappend="'tone-' + ${album.id % 6}">
+      <span class="hole" aria-hidden="true"></span>
+      <span class="sleeve-letter" th:text="${#strings.substring(album.title, 0, 1)}">A</span>
+      <span class="sleeve-caption" th:text="${album.releaseYear}">1973</span>
+    </div>
+    <div>
+      <p class="eyebrow">Альбом</p>
+      <h1 th:text="${album.title}">Назва</h1>
+      <p class="lead-name">
+        <a th:href="@{/catalog/artists/{id}(id=${album.artistId})}" th:text="${album.artistName}">Виконавець</a>
+      </p>
+      <dl class="facts">
+        <div>
+          <dt>Рік</dt>
+          <dd th:text="${album.releaseYear}">1973</dd>
+        </div>
+        <div>
+          <dt>Лейбл</dt>
+          <dd th:text="${album.label != null ? album.label : '—'}">—</dd>
+        </div>
+        <div>
+          <dt>Жанри</dt>
+          <dd th:text="${#strings.listJoin(album.genres, ', ')}">Рок</dd>
+        </div>
+      </dl>
+      <p class="rating-block" th:if="${album.ratingCount > 0}">
+        <span class="stars lg" th:style="|--value: ${album.averageRating}|" aria-hidden="true">★★★★★</span>
+        <strong th:text="${#numbers.formatDecimal(album.averageRating, 1, 1)}">4.5</strong>
+        <span th:text="${T(dev.vinyllab.util.Ukrainian).ratings(album.ratingCount)}">2 оцінки</span>
+      </p>
+      <p class="quiet" th:if="${album.ratingCount == 0}">Оцінок ще немає. Середній бал з’явиться після першого голосу.</p>
+
+      <form sec:authorize="isAuthenticated()" class="score-form" th:action="@{/catalog/albums/{id}/rating(id=${album.id})}" th:object="${ratingForm}" method="post">
+        <fieldset>
+          <legend>Ваша оцінка</legend>
+          <div class="score">
+            <label th:each="n : ${#numbers.sequence(1, 5)}">
+              <input type="radio" th:field="*{score}" th:value="${n}">
+              <span th:text="${n}">1</span>
+            </label>
+          </div>
+        </fieldset>
+        <button class="button" type="submit">Зберегти оцінку</button>
+      </form>
+      <p sec:authorize="!isAuthenticated()" class="quiet">Щоб оцінити альбом, <a th:href="@{/login}">увійдіть</a>.</p>
+
+      <div class="row">
+        <a sec:authorize="isAuthenticated()" class="button" th:href="@{/collection/new(albumId=${album.id})}">Додати до колекції</a>
+        <a sec:authorize="!isAuthenticated()" class="button ghost" th:href="@{/login}">Увійдіть, щоб додати копію</a>
+        <p sec:authorize="isAuthenticated()" th:if="${album.copiesInCollection > 0}" class="quiet" th:text="'У колекції вже є копій: ' + ${album.copiesInCollection}"></p>
+      </div>
+    </div>
+  </article>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

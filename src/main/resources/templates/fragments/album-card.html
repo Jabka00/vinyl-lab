@@ -1,0 +1,19 @@
+<article th:fragment="card(album)" class="record">
+  <a class="sleeve" th:classappend="'tone-' + ${album.id % 6}" th:href="@{/catalog/albums/{id}(id=${album.id})}">
+    <span class="hole" aria-hidden="true"></span>
+    <span class="sleeve-letter" th:text="${#strings.substring(album.title, 0, 1)}">A</span>
+    <span class="sleeve-caption" th:text="${album.releaseYear}">1973</span>
+  </a>
+  <div class="record-body">
+    <h3><a th:href="@{/catalog/albums/{id}(id=${album.id})}" th:text="${album.title}">Альбом</a></h3>
+    <p th:text="${album.artistName}">Виконавець</p>
+    <p class="tags">
+      <span th:each="genre : ${album.genres}" th:text="${genre}">Жанр</span>
+    </p>
+    <p class="rating-line" th:if="${album.ratingCount > 0}">
+      <span class="stars" th:style="|--value: ${album.averageRating}|" aria-hidden="true">★★★★★</span>
+      <span th:text="${#numbers.formatDecimal(album.averageRating, 1, 1)}">4.5</span>
+    </p>
+    <p class="quiet" th:if="${album.ratingCount == 0}">Ще немає оцінок</p>
+  </div>
+</article>

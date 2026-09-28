@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${heading})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1 th:text="${heading}">Жанр</h1>
+  <form class="stack" th:object="${genreForm}" method="post"
+        th:action="${editing} ? @{/admin/genres/{id}(id=${entityId})} : @{/admin/genres}">
+    <div th:replace="~{fragments/layout :: formErrors}"></div>
+    <label class="field">
+      <span>Назва</span>
+      <input th:field="*{name}" required maxlength="80">
+      <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+    </label>
+    <div class="row">
+      <button class="button" type="submit">Зберегти</button>
+      <a class="button ghost" th:href="@{/admin/genres}">Скасувати</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

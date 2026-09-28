@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Головна')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main>
+  <section class="mast">
+    <div class="wrap mast-grid">
+      <div>
+        <p class="eyebrow">Особиста полиця</p>
+        <h1>Каталог платівок, який пам’ятає стан кожної копії.</h1>
+        <p class="lead">Vinyl Lab тримає довідник виконавців і альбомів, а вашу колекцію — окремо: дата, стан, нотатки і проста статистика по жанрах.</p>
+        <div class="row">
+          <a class="button" th:href="@{/catalog/albums}">Відкрити каталог</a>
+          <a class="button ghost" th:href="@{/about}">Як це влаштовано</a>
+        </div>
+      </div>
+      <ol class="steps">
+        <li>
+          <span>01</span>
+          <div>
+            <strong>Каталог</strong>
+            <p>Спільний довідник альбомів. Оцінка — одне число від 1 до 5, середнє видно всім.</p>
+          </div>
+        </li>
+        <li>
+          <span>02</span>
+          <div>
+            <strong>Колекція</strong>
+            <p>Після реєстрації додаєте свої копії: стан, дату придбання і нотатку.</p>
+          </div>
+        </li>
+        <li>
+          <span>03</span>
+          <div>
+            <strong>Полиця</strong>
+            <p>Статистика рахує лише ваші платівки і показує, які жанри переважають.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+  <section class="wrap section">
+    <div class="page-head">
+      <h2>Загальний рейтинг</h2>
+      <a th:href="@{/catalog/albums(sort='rating')}">Увесь каталог</a>
+    </div>
+    <ol class="rank" th:if="${!top.isEmpty()}">
+      <li th:each="album, iter : ${top}">
+        <span class="place" th:text="${iter.count}">1</span>
+        <a th:href="@{/catalog/albums/{id}(id=${album.id})}">
+          <strong th:text="${album.title}">Альбом</strong>
+          <span th:text="${album.artistName}">Виконавець</span>
+        </a>
+        <span class="rank-score" th:text="${#numbers.formatDecimal(album.averageRating, 1, 1)}">5.0</span>
+      </li>
+    </ol>
+    <p class="empty" th:if="${top.isEmpty()}">Оцінок ще немає.</p>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

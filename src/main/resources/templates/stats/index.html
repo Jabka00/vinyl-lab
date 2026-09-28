@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Статистика')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <p class="eyebrow">Моя полиця</p>
+  <h1>Статистика</h1>
+  <p class="hero-count" th:text="${summary}">0 платівок</p>
+  <div class="split" th:if="${stats.total > 0}">
+    <section>
+      <h2>Жанри</h2>
+      <p class="quiet">Альбом із кількома жанрами входить у кожен.</p>
+      <ul class="bars">
+        <li th:each="slice : ${stats.genres}">
+          <div class="bar-label">
+            <span th:text="${slice.label}">Рок</span>
+            <span th:text="${slice.count}">1</span>
+          </div>
+          <div class="track"><span th:style="|width: ${slice.width}%|"></span></div>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Стан копій</h2>
+      <ul class="bars">
+        <li th:each="slice : ${stats.conditions}">
+          <div class="bar-label">
+            <span th:text="${slice.label}">VG</span>
+            <span th:text="${slice.count}">1</span>
+          </div>
+          <div class="track"><span th:style="|width: ${slice.width}%|"></span></div>
+        </li>
+      </ul>
+    </section>
+  </div>
+  <p class="empty" th:if="${stats.total == 0}">Додайте першу платівку, і тут з’явиться розклад.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Увійти')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1>Вхід</h1>
+  <p class="banner bad" th:if="${param.error}">Невірне ім’я або пароль</p>
+  <p class="banner ok" th:if="${param.logout}">Ви вийшли з облікового запису</p>
+  <form class="stack" th:action="@{/login}" method="post">
+    <label class="field">
+      <span>Ім’я</span>
+      <input name="username" autocomplete="username" required>
+    </label>
+    <label class="field">
+      <span>Пароль</span>
+      <input name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <button class="button" type="submit">Увійти</button>
+  </form>
+  <p class="quiet">Немає облікового запису? <a th:href="@{/register}">Зареєструватись</a></p>
+  <aside class="note">
+    <p>Демо-колекція: <strong>ira</strong> / Ira12345</p>
+    <p>Адміністратор: <strong>admin</strong> / Admin12345</p>
+  </aside>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

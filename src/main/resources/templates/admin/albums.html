@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Альбоми')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div th:replace="~{fragments/layout :: alerts}"></div>
+  <div class="page-head">
+    <h1>Альбоми</h1>
+    <a class="button" th:href="@{/admin/albums/new}">Новий альбом</a>
+  </div>
+  <table class="sheet">
+    <thead>
+    <tr><th>Назва</th><th>Виконавець</th><th>Рік</th><th>Жанри</th><th>Рейтинг</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="album : ${albums}">
+      <td><a th:href="@{/catalog/albums/{id}(id=${album.id})}" th:text="${album.title}">Альбом</a></td>
+      <td th:text="${album.artistName}">Виконавець</td>
+      <td th:text="${album.releaseYear}">1973</td>
+      <td th:text="${#strings.listJoin(album.genres, ', ')}">Рок</td>
+      <td th:text="${album.ratingCount > 0 ? #numbers.formatDecimal(album.averageRating, 1, 1) : '—'}">—</td>
+      <td class="row">
+        <a th:href="@{/admin/albums/{id}/edit(id=${album.id})}">Змінити</a>
+        <form th:action="@{/admin/albums/{id}/delete(id=${album.id})}" method="post" onsubmit="return confirm('Видалити альбом?');">
+          <button class="text-button danger-text" type="submit">Видалити</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

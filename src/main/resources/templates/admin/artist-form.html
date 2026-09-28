@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${heading})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1 th:text="${heading}">Виконавець</h1>
+  <form class="stack" th:object="${artistForm}" method="post"
+        th:action="${editing} ? @{/admin/artists/{id}(id=${entityId})} : @{/admin/artists}">
+    <div th:replace="~{fragments/layout :: formErrors}"></div>
+    <label class="field">
+      <span>Ім’я</span>
+      <input th:field="*{name}" required maxlength="120">
+      <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+    </label>
+    <label class="field">
+      <span>Країна</span>
+      <input th:field="*{country}" required maxlength="80">
+      <small th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></small>
+    </label>
+    <label class="field">
+      <span>Коротка довідка</span>
+      <textarea th:field="*{biography}" rows="5" maxlength="2000"></textarea>
+      <small th:if="${#fields.hasErrors('biography')}" th:errors="*{biography}"></small>
+    </label>
+    <div class="row">
+      <button class="button" type="submit">Зберегти</button>
+      <a class="button ghost" th:href="@{/admin/artists}">Скасувати</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

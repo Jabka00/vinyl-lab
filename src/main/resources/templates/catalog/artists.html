@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Виконавці')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Довідник</p>
+      <h1>Виконавці</h1>
+    </div>
+  </div>
+  <form class="filters" method="get" th:action="@{/catalog/artists}">
+    <label class="field grow">
+      <span>Пошук</span>
+      <input type="search" name="q" th:value="${q}" placeholder="Ім’я">
+    </label>
+    <button class="button" type="submit">Знайти</button>
+  </form>
+  <ul class="directory" th:if="${!artists.isEmpty()}">
+    <li th:each="artist : ${artists}">
+      <a th:href="@{/catalog/artists/{id}(id=${artist.id})}">
+        <strong th:text="${artist.name}">Ім’я</strong>
+        <span th:text="${artist.country}">Країна</span>
+      </a>
+      <span class="count" th:text="${artist.albumCount}">0</span>
+    </li>
+  </ul>
+  <p class="empty" th:if="${artists.isEmpty()}">Нікого не знайдено.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

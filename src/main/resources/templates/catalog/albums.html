@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Каталог')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Довідник</p>
+      <h1>Альбоми</h1>
+    </div>
+  </div>
+  <form class="filters" method="get" th:action="@{/catalog/albums}">
+    <label class="field grow">
+      <span>Пошук</span>
+      <input type="search" name="q" th:value="${q}" placeholder="Назва або виконавець">
+    </label>
+    <label class="field">
+      <span>Жанр</span>
+      <select name="genre">
+        <option value="">Усі</option>
+        <option th:each="item : ${genres}" th:value="${item.id}" th:text="${item.name}" th:selected="${genre != null and genre == item.id}"></option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Порядок</span>
+      <select name="sort">
+        <option value="title" th:selected="${sort == 'title'}">За назвою</option>
+        <option value="rating" th:selected="${sort == 'rating'}">За рейтингом</option>
+        <option value="year" th:selected="${sort == 'year'}">За роком</option>
+      </select>
+    </label>
+    <button class="button" type="submit">Показати</button>
+  </form>
+  <div class="records" th:if="${!albums.isEmpty()}">
+    <th:block th:each="album : ${albums}">
+      <article th:replace="~{fragments/album-card :: card(${album})}"></article>
+    </th:block>
+  </div>
+  <p class="empty" th:if="${albums.isEmpty()}">Нічого не знайдено.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

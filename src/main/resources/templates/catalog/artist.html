@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${artist.name})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <p class="eyebrow" th:text="${artist.country}">Країна</p>
+  <h1 th:text="${artist.name}">Виконавець</h1>
+  <p class="bio" th:if="${artist.biography != null}" th:text="${artist.biography}"></p>
+  <h2>Альбоми</h2>
+  <div class="records" th:if="${!artist.albums.isEmpty()}">
+    <th:block th:each="album : ${artist.albums}">
+      <article th:replace="~{fragments/album-card :: card(${album})}"></article>
+    </th:block>
+  </div>
+  <p class="empty" th:if="${artist.albums.isEmpty()}">Альбомів поки немає.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

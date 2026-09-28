@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${heading})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <h1 th:text="${heading}">Платівка</h1>
+  <form class="stack" th:object="${collectionForm}" method="post"
+        th:action="${editing} ? @{/collection/{id}(id=${itemId})} : @{/collection}">
+    <div th:replace="~{fragments/layout :: formErrors}"></div>
+    <label class="field">
+      <span>Альбом</span>
+      <select th:field="*{albumId}" required>
+        <option value="">Оберіть</option>
+        <option th:each="album : ${albums}" th:value="${album.id}" th:text="${album.artistName + ' — ' + album.title}">Альбом</option>
+      </select>
+      <small th:if="${#fields.hasErrors('albumId')}" th:errors="*{albumId}"></small>
+    </label>
+    <label class="field">
+      <span>Стан</span>
+      <select th:field="*{condition}" required>
+        <option th:each="item : ${conditions}" th:value="${item}" th:text="${item.display()}">VG</option>
+      </select>
+      <small th:if="${#fields.hasErrors('condition')}" th:errors="*{condition}"></small>
+    </label>
+    <label class="field">
+      <span>Дата придбання</span>
+      <input type="date" th:field="*{acquiredOn}">
+      <small th:if="${#fields.hasErrors('acquiredOn')}" th:errors="*{acquiredOn}"></small>
+    </label>
+    <label class="field">
+      <span>Нотатки</span>
+      <textarea th:field="*{notes}" rows="4" maxlength="1000"></textarea>
+      <small th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></small>
+    </label>
+    <div class="row">
+      <button class="button" type="submit">Зберегти</button>
+      <a class="button ghost" th:href="@{/collection}">Скасувати</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

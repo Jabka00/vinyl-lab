@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: vinyl-lab
+  web:
+    locale: uk
+    locale-resolver: fixed
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:vinyllab}
+    username: ${DB_USER:vinyllab}
+    password: ${DB_PASSWORD:vinyllab}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update

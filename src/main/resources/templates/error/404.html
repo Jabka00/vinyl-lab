@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Не знайдено')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap narrow">
+  <p class="eyebrow">404</p>
+  <h1>Сторінку не знайдено</h1>
+  <p th:text="${message}">Запису немає.</p>
+  <a class="button" th:href="@{/}">На головну</a>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' — Vinyl Lab'">Vinyl Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="icon" th:href="@{/favicon.svg}" type="image/svg+xml">
+</head>
+<body>
+<header th:fragment="header" class="site-header">
+  <div class="wrap header-bar">
+    <a class="brand" th:href="@{/}">
+      <span class="mark" aria-hidden="true"></span>
+      <span>
+        <strong>Vinyl Lab</strong>
+        <small>каталог і колекція</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a th:href="@{/catalog/albums}">Каталог</a>
+      <a th:href="@{/catalog/artists}">Виконавці</a>
+      <a th:href="@{/about}">Про сервіс</a>
+      <a sec:authorize="isAuthenticated()" th:href="@{/collection}">Колекція</a>
+      <a sec:authorize="isAuthenticated()" th:href="@{/stats}">Статистика</a>
+      <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Адмін</a>
+    </nav>
+    <div class="account">
+      <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Увійти</a>
+      <a sec:authorize="!isAuthenticated()" class="button small" th:href="@{/register}">Реєстрація</a>
+      <span sec:authorize="isAuthenticated()" class="who" sec:authentication="name">user</span>
+      <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+        <button class="text-button" type="submit">Вийти</button>
+      </form>
+    </div>
+  </div>
+</header>
+<div th:fragment="alerts">
+  <p class="banner ok" th:if="${success}" th:text="${success}"></p>
+  <p class="banner bad" th:if="${error}" th:text="${error}"></p>
+</div>
+<div th:fragment="formErrors">
+  <p class="banner bad" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+</div>
+<footer th:fragment="footer" class="site-footer">
+  <div class="wrap">
+    <p>Vinyl Lab · особистий каталог вінілу</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Користувачі')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div th:replace="~{fragments/layout :: alerts}"></div>
+  <h1>Користувачі</h1>
+  <table class="sheet">
+    <thead>
+    <tr><th>Ім’я</th><th>Пошта</th><th>Роль</th><th>З</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+      <td th:text="${user.username}">ira</td>
+      <td th:text="${user.email}">ira@vinyl.lab</td>
+      <td th:text="${user.role.label}">Користувач</td>
+      <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}">01.01.2026</td>
+      <td class="row" th:if="${user.id != currentId}">
+        <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" th:if="${user.role.name() != 'ADMIN'}">
+          <button class="text-button" type="submit" name="role" value="ADMIN">Зробити адміном</button>
+        </form>
+        <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" th:if="${user.role.name() == 'ADMIN'}">
+          <button class="text-button" type="submit" name="role" value="USER">Зробити користувачем</button>
+        </form>
+        <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" onsubmit="return confirm('Видалити користувача разом із колекцією й оцінками?');">
+          <button class="text-button danger-text" type="submit">Видалити</button>
+        </form>
+      </td>
+      <td th:if="${user.id == currentId}" class="quiet">Це ви</td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

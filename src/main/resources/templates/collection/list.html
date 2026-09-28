@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Колекція')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="wrap">
+  <div th:replace="~{fragments/layout :: alerts}"></div>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Моя полиця</p>
+      <h1>Колекція</h1>
+      <p class="quiet" th:text="${summary}">0 платівок</p>
+    </div>
+    <a class="button" th:href="@{/collection/new}">Додати платівку</a>
+  </div>
+  <div class="stack-list" th:if="${!items.isEmpty()}">
+    <article class="copy" th:each="item : ${items}">
+      <div>
+        <h2><a th:href="@{/catalog/albums/{id}(id=${item.albumId})}" th:text="${item.albumTitle}">Альбом</a></h2>
+        <p th:text="${item.artistName}">Виконавець</p>
+        <p class="tags">
+          <span th:each="genre : ${item.genres}" th:text="${genre}">Жанр</span>
+        </p>
+        <p class="note-text" th:if="${item.notes != null}" th:text="${item.notes}"></p>
+      </div>
+      <div class="copy-meta">
+        <strong th:text="${item.condition}">VG</strong>
+        <span th:if="${item.acquiredOn != null}" th:text="${#temporals.format(item.acquiredOn, 'dd.MM.yyyy')}">01.01.2020</span>
+        <span th:if="${item.acquiredOn == null}">Дата не вказана</span>
+        <div class="row">
+          <a class="button ghost small" th:href="@{/collection/{id}/edit(id=${item.id})}">Змінити</a>
+          <form th:action="@{/collection/{id}/delete(id=${item.id})}" method="post" onsubmit="return confirm('Прибрати платівку з колекції?');">
+            <button class="button danger small" type="submit">Прибрати</button>
+          </form>
+        </div>
+      </div>
+    </article>
+  </div>
+  <p class="empty" th:if="${items.isEmpty()}">Полиця порожня. Оберіть альбом у <a th:href="@{/catalog/albums}">каталозі</a>.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
