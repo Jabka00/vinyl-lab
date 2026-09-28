@@ -5,9 +5,9 @@ import dev.vinyllab.entity.AlbumRating;
 import dev.vinyllab.entity.UserAccount;
 import dev.vinyllab.exception.ConflictException;
 import dev.vinyllab.exception.NotFoundException;
-import dev.vinyllab.repository.AlbumRatingRepository;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RatingService {
 
-  private final AlbumRatingRepository ratings;
   private final AlbumRepository albums;
   private final UserRepository users;
+  private final EntityManager entityManager;
 
   @Transactional
   public void rate(Long userId, Long albumId, int score) {
@@ -27,10 +27,12 @@ public class RatingService {
     }
     Album album = albums.findById(albumId).orElseThrow(() -> new NotFoundException("Альбом не знайдено"));
     UserAccount user = users.findById(userId).orElseThrow(() -> new NotFoundException("Користувача не знайдено"));
-    AlbumRating rating = ratings.findByUserIdAndAlbumId(userId, albumId).orElseGet(AlbumRating::new);
+    AlbumRating rating = albums.findRating(userId, albumId).orElseGet(AlbumRating::new);
     rating.setUser(user);
     rating.setAlbum(album);
     rating.setScore(score);
-    ratings.save(rating);
+    if (rating.getId() == null) {
+      entityManager.persist(rating);
+    }
   }
 }

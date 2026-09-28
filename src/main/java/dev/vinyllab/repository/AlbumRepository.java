@@ -1,9 +1,11 @@
 package dev.vinyllab.repository;
 
 import dev.vinyllab.entity.Album;
-import dev.vinyllab.repository.projection.IdCount;
+import dev.vinyllab.entity.AlbumRating;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -40,9 +42,20 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
   boolean existsByArtist_IdAndTitleIgnoreCaseAndIdNot(Long artistId, String title, Long id);
 
-  @Query("select a.artist.id as id, count(a.id) as total from Album a group by a.artist.id")
-  List<IdCount> countGroupedByArtist();
+  @Query("select r from AlbumRating r where r.user.id = :userId and r.album.id = :albumId")
+  Optional<AlbumRating> findRating(@Param("userId") Long userId, @Param("albumId") Long albumId);
 
-  @Query("select g.id as id, count(a.id) as total from Album a join a.genres g group by g.id")
-  List<IdCount> countGroupedByGenre();
+  @Query("select r.album.id, r.score from AlbumRating r")
+  List<Object[]> ratingScores();
+
+  @Query("select count(r) from AlbumRating r")
+  long countRatings();
+
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("delete from AlbumRating r where r.user.id = :userId")
+  void deleteRatingsForUser(@Param("userId") Long userId);
+
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("delete from AlbumRating r where r.album.id = :albumId")
+  void deleteRatingsForAlbum(@Param("albumId") Long albumId);
 }

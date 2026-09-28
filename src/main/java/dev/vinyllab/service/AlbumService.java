@@ -8,19 +8,17 @@ import dev.vinyllab.exception.ConflictException;
 import dev.vinyllab.exception.NotFoundException;
 import dev.vinyllab.form.AlbumForm;
 import dev.vinyllab.mapper.AlbumMapper;
-import dev.vinyllab.repository.AlbumRatingRepository;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.ArtistRepository;
 import dev.vinyllab.repository.CollectionItemRepository;
 import dev.vinyllab.repository.GenreRepository;
-import dev.vinyllab.repository.projection.RatingAggregate;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -36,7 +34,6 @@ public class AlbumService {
   private final AlbumRepository albums;
   private final ArtistRepository artists;
   private final GenreRepository genres;
-  private final AlbumRatingRepository ratings;
   private final CollectionItemRepository collectionItems;
   private final AlbumMapper albumMapper;
 
@@ -78,7 +75,7 @@ public class AlbumService {
     Integer myScore = null;
     long copies = 0;
     if (userId != null) {
-      myScore = ratings.findByUserIdAndAlbumId(userId, id).map(row -> row.getScore()).orElse(null);
+      myScore = albums.findRating(userId, id).map(row -> row.getScore()).orElse(null);
       copies = collectionItems.countByOwnerIdAndAlbumId(userId, id);
     }
     return toView(album, summaries(), myScore, copies);
@@ -110,7 +107,7 @@ public class AlbumService {
     if (collectionItems.existsByAlbumId(id)) {
       throw new ConflictException("Альбом є в чиїйсь колекції");
     }
-    ratings.deleteForAlbum(id);
+    albums.deleteRatingsForAlbum(id);
     albums.delete(album);
   }
 
@@ -158,14 +155,17 @@ public class AlbumService {
   }
 
   private Map<Long, Score> summaries() {
-    return ratings.aggregateAll().stream()
-        .collect(Collectors.toMap(
-            RatingAggregate::getAlbumId,
-            row -> new Score(
-                row.getAverageScore() == null ? 0d : row.getAverageScore(),
-                row.getVoteCount() == null ? 0L : row.getVoteCount()
-            )
-        ));
+    Map<Long, int[]> grouped = new HashMap<>();
+    for (Object[] row : albums.ratingScores()) {
+      long albumId = ((Number) row[0]).longValue();
+      int score = ((Number) row[1]).intValue();
+      int[] totals = grouped.computeIfAbsent(albumId, id -> new int[2]);
+      totals[0] += score;
+      totals[1] += 1;
+    }
+    Map<Long, Score> summary = new HashMap<>();
+    grouped.forEach((albumId, totals) -> summary.put(albumId, new Score(totals[0] / (double) totals[1], totals[1])));
+    return summary;
   }
 
   private boolean matches(Album album, String needle, Long genreId) {

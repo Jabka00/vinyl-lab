@@ -8,7 +8,6 @@ import dev.vinyllab.form.ArtistForm;
 import dev.vinyllab.mapper.ArtistMapper;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.ArtistRepository;
-import dev.vinyllab.repository.projection.IdCount;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -94,8 +93,8 @@ public class ArtistService {
   }
 
   private Map<Long, Long> counts() {
-    return albums.countGroupedByArtist().stream()
-        .collect(Collectors.toMap(IdCount::getId, IdCount::getTotal));
+    return albums.findDetailed().stream()
+        .collect(Collectors.groupingBy(album -> album.getArtist().getId(), Collectors.counting()));
   }
 
   private String normalize(String query) {

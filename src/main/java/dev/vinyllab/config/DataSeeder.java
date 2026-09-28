@@ -1,19 +1,18 @@
 package dev.vinyllab.config;
 
 import dev.vinyllab.entity.Album;
-import dev.vinyllab.entity.AlbumRating;
 import dev.vinyllab.entity.Artist;
 import dev.vinyllab.entity.CollectionItem;
 import dev.vinyllab.entity.Genre;
 import dev.vinyllab.entity.UserAccount;
 import dev.vinyllab.model.RecordCondition;
 import dev.vinyllab.model.Role;
-import dev.vinyllab.repository.AlbumRatingRepository;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.ArtistRepository;
 import dev.vinyllab.repository.CollectionItemRepository;
 import dev.vinyllab.repository.GenreRepository;
 import dev.vinyllab.repository.UserRepository;
+import dev.vinyllab.service.RatingService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -33,8 +32,8 @@ public class DataSeeder implements ApplicationRunner {
   private final ArtistRepository artists;
   private final AlbumRepository albums;
   private final UserRepository users;
-  private final AlbumRatingRepository ratings;
   private final CollectionItemRepository items;
+  private final RatingService ratings;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -156,11 +155,7 @@ public class DataSeeder implements ApplicationRunner {
   }
 
   private void rate(UserAccount user, Album album, int score) {
-    AlbumRating rating = new AlbumRating();
-    rating.setUser(user);
-    rating.setAlbum(album);
-    rating.setScore(score);
-    ratings.save(rating);
+    ratings.rate(user.getId(), album.getId(), score);
   }
 
   private void copy(

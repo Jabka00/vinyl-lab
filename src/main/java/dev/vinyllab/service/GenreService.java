@@ -8,7 +8,6 @@ import dev.vinyllab.form.GenreForm;
 import dev.vinyllab.mapper.GenreMapper;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.GenreRepository;
-import dev.vinyllab.repository.projection.IdCount;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,8 +26,9 @@ public class GenreService {
   private final GenreMapper genreMapper;
 
   public List<GenreCard> list() {
-    Map<Long, Long> counts = albums.countGroupedByGenre().stream()
-        .collect(Collectors.toMap(IdCount::getId, IdCount::getTotal));
+    Map<Long, Long> counts = albums.findDetailed().stream()
+        .flatMap(album -> album.getGenres().stream())
+        .collect(Collectors.groupingBy(Genre::getId, Collectors.counting()));
     return genres.findAllByOrderByNameAsc().stream()
         .map(genre -> genreMapper.toCard(genre, counts.getOrDefault(genre.getId(), 0L)))
         .toList();

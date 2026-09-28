@@ -3,16 +3,17 @@ package dev.vinyllab.service;
 import dev.vinyllab.dto.CollectionStats;
 import dev.vinyllab.dto.DashboardCounts;
 import dev.vinyllab.dto.StatSlice;
+import dev.vinyllab.entity.CollectionItem;
+import dev.vinyllab.entity.Genre;
 import dev.vinyllab.model.RecordCondition;
-import dev.vinyllab.repository.AlbumRatingRepository;
 import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.ArtistRepository;
 import dev.vinyllab.repository.CollectionItemRepository;
 import dev.vinyllab.repository.GenreRepository;
 import dev.vinyllab.repository.UserRepository;
-import dev.vinyllab.repository.projection.ConditionCount;
-import dev.vinyllab.repository.projection.NamedCount;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,18 +31,26 @@ public class StatsService {
   private final ArtistRepository artists;
   private final AlbumRepository albums;
   private final GenreRepository genres;
-  private final AlbumRatingRepository ratings;
 
   public CollectionStats forUser(Long ownerId) {
-    long total = items.countByOwnerId(ownerId);
-    List<NamedCount> genreRows = items.countByGenre(ownerId);
-    long widest = genreRows.stream().mapToLong(row -> value(row.getTotal())).max().orElse(0);
-    List<StatSlice> genreSlices = genreRows.stream()
-        .map(row -> new StatSlice(row.getName(), value(row.getTotal()), width(value(row.getTotal()), widest)))
+    List<CollectionItem> owned = items.findOwned(ownerId);
+    long total = owned.size();
+
+    Map<String, Long> byGenre = new HashMap<>();
+    for (CollectionItem item : owned) {
+      for (Genre genre : item.getAlbum().getGenres()) {
+        byGenre.merge(genre.getName(), 1L, Long::sum);
+      }
+    }
+    long widest = byGenre.values().stream().mapToLong(Long::longValue).max().orElse(0);
+    List<StatSlice> genreSlices = byGenre.entrySet().stream()
+        .sorted(Comparator.comparingLong((Map.Entry<String, Long> entry) -> entry.getValue()).reversed()
+            .thenComparing(Map.Entry::getKey))
+        .map(entry -> new StatSlice(entry.getKey(), entry.getValue(), width(entry.getValue(), widest)))
         .toList();
 
-    Map<RecordCondition, Long> byCondition = items.countByCondition(ownerId).stream()
-        .collect(Collectors.toMap(ConditionCount::getCondition, row -> value(row.getTotal())));
+    Map<RecordCondition, Long> byCondition = owned.stream()
+        .collect(Collectors.groupingBy(CollectionItem::getCondition, Collectors.counting()));
     List<StatSlice> conditionSlices = Arrays.stream(RecordCondition.values())
         .map(condition -> {
           long count = byCondition.getOrDefault(condition, 0L);
@@ -60,12 +69,8 @@ public class StatsService {
         albums.count(),
         genres.count(),
         items.count(),
-        ratings.count()
+        albums.countRatings()
     );
-  }
-
-  private long value(Long number) {
-    return number == null ? 0L : number;
   }
 
   private int width(long count, long base) {

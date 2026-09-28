@@ -6,7 +6,7 @@ import dev.vinyllab.exception.NotFoundException;
 import dev.vinyllab.form.RegisterForm;
 import dev.vinyllab.mapper.UserMapper;
 import dev.vinyllab.model.Role;
-import dev.vinyllab.repository.AlbumRatingRepository;
+import dev.vinyllab.repository.AlbumRepository;
 import dev.vinyllab.repository.CollectionItemRepository;
 import dev.vinyllab.repository.UserRepository;
 import java.util.List;
@@ -25,7 +25,7 @@ public class UserService implements UserDetailsService {
 
   private final UserRepository users;
   private final CollectionItemRepository collectionItems;
-  private final AlbumRatingRepository ratings;
+  private final AlbumRepository albums;
   private final UserMapper userMapper;
   private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
@@ -82,7 +82,7 @@ public class UserService implements UserDetailsService {
     if (user.getRole() == Role.ADMIN && users.countByRole(Role.ADMIN) <= 1) {
       throw new ConflictException("Має лишитися хоча б один адміністратор");
     }
-    ratings.deleteForUser(id);
+    albums.deleteRatingsForUser(id);
     collectionItems.deleteForOwner(id);
     users.delete(user);
   }
